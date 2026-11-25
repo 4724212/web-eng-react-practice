@@ -1,10 +1,43 @@
-import { todos } from "./data";
+import { type SubmitEvent, useState } from "react";
+import type { Todo } from "./types";
+import { todos as initialTodos } from "./data";
 import { TodoList } from "./components/TodoList";
 
 export default function App() {
+  const [todos, setTodos] = useState<Todo[]>(initialTodos);
+  const [title, setTitle] = useState<string>("");
+
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const newTodo: Todo = {
+      id: Date.now(),
+      title,
+      completed: false,
+    };
+    setTodos((current) => [...current, newTodo]);
+    setTitle("");
+  }
+
+  const toggleTodo = (id: number) => {
+    setTodos((current) =>
+      current.map((todo) =>
+        todo.id === id
+          ? { ...todo, completed: !todo.completed }
+          : todo,
+      ),
+    );
+  };
   return (
     <main>
       <h1>React TODO</h1>
+      <label>
+        新しいTODO
+        <input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+      </label>
+      <p>入力中：{title}</p>
       <TodoList todos={todos} />
     </main>
   );
